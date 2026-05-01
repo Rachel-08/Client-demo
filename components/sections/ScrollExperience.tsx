@@ -267,7 +267,7 @@ const isContactActive = activeSegment === "contact";
   };
 
   const handleEnterClick = () => {
-    srollToProgress(0.34);
+    srollToProgress(0.36);
   }
 
   return (
