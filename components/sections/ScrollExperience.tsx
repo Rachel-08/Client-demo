@@ -114,7 +114,7 @@ const isContactActive = activeSegment === "contact";
   const windowScale = useTransform(
     scrollYProgress,
     [0.0, 0.28],
-    [1, 3.1]
+    [1, 2.1]
   );
 
   const windowOpacity = useTransform(
@@ -253,6 +253,23 @@ const isContactActive = activeSegment === "contact";
     ["100vh", "0vh"]
   );
 
+  const srollToProgress = (progress: number) => {
+    if(!containerRef.current) return;
+
+    const container = containerRef.current;
+    const containerTop = container.offsetTop;
+    const scrollableDistance = container.offsetHeight - window.innerHeight;
+
+    window.scrollTo({
+      top: containerTop + scrollableDistance * progress,
+      behavior: 'smooth',
+    });
+  };
+
+  const handleEnterClick = () => {
+    srollToProgress(0.34);
+  }
+
   return (
     <section
       id="top"
@@ -271,6 +288,7 @@ const isContactActive = activeSegment === "contact";
           windowExitX={windowExitX}
           frameOpacity={frameOpacity}
           scrollTextOpacity={scrollTextOpacity}
+          onEnterClick={handleEnterClick}
         />
 
         <StudioLanding
