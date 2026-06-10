@@ -1,0 +1,1062 @@
+"use client";
+
+import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence, useInView } from "motion/react";
+
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
+
+type TeamMember = {
+  id: number
+  name: string;
+  role: string;
+  specialisation: string;
+  // qualifications: string;
+  // batch: string;
+  experience: string;
+  bio: string;
+  initials: string;
+  projects: number;
+  skills: string[];
+};
+
+// ─────────────────────────────────────────────
+// Data
+// ─────────────────────────────────────────────
+
+const OWNER = {
+  name: "Er. Deepak Ku. Mandal",
+  role: "Founder & Owner",
+  qualification: "B.Tech in Civil Engineering",
+  batch: "2022 Passout",
+  experience: "5+ years in Construction & Design",
+  phone: "8249144526",
+  email: "dmdeepak6534@gmail.com",
+  initials: "DM",
+  bio: "Er. Deepak Ku. Mandal leads the studio with a strong foundation in civil engineering, construction execution, and design coordination. His approach combines technical accuracy, practical site knowledge, and a clear understanding of client requirements — ensuring every project is planned, detailed, and delivered with responsibility.",
+  strengths: [
+    "Civil Engineering",
+    "Construction Management",
+    "Design Coordination",
+    "Site Execution",
+  ],
+};
+
+const TEAM: TeamMember[] = [
+  {
+    id: 1,
+    name: "Khitish Pradhan",
+    role: "Senior Architect",
+    specialisation: "Architecture, Planning & 3D Design",
+    experience: "4+ years",
+    bio: "Khitish leads architectural planning, elevation concepts, and design development. His work focuses on creating practical, modern, and visually strong spaces that balance client needs with buildable design.",
+    initials: "KP",
+    projects: 58,
+    skills: ["Architecture", "3D Design", "Planning", "Elevation Design"],
+  },
+  {
+    id: 2,
+    name: "Kiran Bhal",
+    role: "Managing Director",
+    specialisation: "Business Operations & Project Coordination",
+    experience: "5+ years",
+    bio: "Kiran oversees the studio’s daily operations, client coordination, and project workflow. With a strong focus on planning and execution, Kiran ensures every project moves smoothly from discussion to delivery.",
+    initials: "KB",
+    projects: 30,
+    skills: ["Project Coordination", "Client Handling", "Operations", "Planning"],
+  },
+  {
+    id: 3,
+    name: "Nayan Baidya",
+    role: "Site Engineer",
+    specialisation: "Site Execution & Construction Supervision",
+    experience: "3+ years",
+    bio: "Nayan manages on-site execution, material coordination, and construction quality checks. His role ensures that drawings and design intent are properly translated into real site work.",
+    initials: "NB",
+    projects: 31,
+    skills: ["Site Supervision", "Execution", "Quality Check", "Material Coordination"],
+  },
+  {
+    id: 4,
+    name: "Niranjan Jena",
+    role: "Site Engineer",
+    specialisation: "Construction Monitoring & Site Management",
+    experience: "3+ years",
+    bio: "Niranjan supports site management, contractor coordination, and day-to-day construction monitoring. He helps maintain progress, workmanship, and project discipline on site.",
+    initials: "NJ",
+    projects: 28,
+    skills: ["Site Management", "Contractor Coordination", "Execution", "Progress Tracking"],
+  },
+  {
+    id: 5,
+    name: "Satyam Das",
+    role: "2D Planner & Designer",
+    specialisation: "2D Planning, Layouts & Drafting",
+    experience: "3+ years",
+    bio: "Satyam creates detailed 2D plans, layout drawings, and design documentation. His work helps convert project requirements into clear and practical drawing sets for approval and execution.",
+    initials: "SD",
+    projects: 46,
+    skills: ["2D Planning", "AutoCAD", "Layout Design", "Drafting"],
+  },
+  {
+    id: 6,
+    name: "Ipsita Bhuyan",
+    role: "Structural Engineer",
+    specialisation: "Structural Design & Technical Detailing",
+    experience: "4+ years",
+    bio: "Ipsita handles structural design inputs, technical detailing, and coordination for safe and stable construction. Her work ensures that every design is supported by strong engineering logic.",
+    initials: "IB",
+    projects: 39,
+    skills: ["Structural Design", "RCC Detailing", "Technical Drawings", "Safety"],
+  },
+];
+
+function OwnerSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-8%" });
+
+  return (
+    <section
+      ref={ref}
+      style={{
+        padding: "clamp(36px,7vh,80px) clamp(24px,5vw,72px) clamp(48px,8vh,90px)",
+        borderBottom: "0.5px solid rgba(26,18,8,0.08)",
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        // Changes layout to single full column layout block on small mobile screens
+        className="grid grid-cols-1 md:grid-cols-[0.9fr_1.4fr] gap-0 overflow-hidden"
+        style={{
+          background: "#f0ece0",
+          border: "0.5px solid rgba(26,18,8,0.1)",
+          borderRadius: 4,
+          boxShadow: "0 24px 70px rgba(26,18,8,0.08)",
+        }}
+      >
+        {/* Left owner image / placeholder block container */}
+        <div
+          // Adjusts grid borders responsively based on active structural breakpoint
+          className="relative flex items-center justify-center border-b border-b-[rgba(26,18,8,0.08)] md:border-b-0 md:border-r md:border-r-[rgba(26,18,8,0.08)]"
+          style={{
+            minHeight: "clamp(240px,42vw,520px)",
+            background: "linear-gradient(135deg, rgba(26,18,8,0.08), rgba(200,160,80,0.12))",
+          }}
+        >
+          <div
+            className="flex items-center justify-center font-serif italic"
+            style={{
+              width: "clamp(120px,15vw,210px)",
+              height: "clamp(120px,15vw,210px)",
+              background: "rgba(245,242,235,0.65)",
+              border: "0.5px solid rgba(200,160,80,0.35)",
+              borderRadius: 4,
+              fontSize: "clamp(42px,6vw,82px)",
+              color: "#c8a052",
+              boxShadow: "0 20px 60px rgba(26,18,8,0.08)",
+            }}
+          >
+            {OWNER.initials}
+          </div>
+
+          <span
+            className="absolute bottom-5 left-5 font-mono uppercase"
+            style={{
+              fontSize: "clamp(6px,0.55vw,8px)",
+              letterSpacing: "0.35em",
+              color: "rgba(26,18,8,0.32)",
+            }}
+          >
+            Founder Profile
+          </span>
+        </div>
+
+        {/* Right owner detailed information blocks */}
+        <div
+          className="flex flex-col"
+          style={{
+            padding: "clamp(24px,5vw,68px)",
+          }}
+        >
+          <span
+            className="font-mono uppercase tracking-[0.42em]"
+            style={{
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(200,160,80,0.65)",
+            }}
+          >
+            Owner Details
+          </span>
+
+          <h2
+            className="font-serif leading-none tracking-tight mt-4"
+            style={{
+              fontSize: "clamp(34px,5.8vw,82px)",
+              color: "#1a1208",
+              letterSpacing: "-0.04em",
+            }}
+          >
+            {OWNER.name}
+          </h2>
+
+          <p
+            className="font-mono uppercase tracking-[0.28em] mt-4"
+            style={{
+              fontSize: "clamp(7px,0.65vw,10px)",
+              color: "rgba(200,160,80,0.7)",
+            }}
+          >
+            {OWNER.role}
+          </p>
+
+          <div
+            style={{
+              height: "0.5px",
+              width: "clamp(42px,6vw,80px)",
+              background: "linear-gradient(90deg,#c8a052,#e8c070,transparent)",
+              margin: "clamp(22px,4vh,36px) 0",
+            }}
+          />
+
+          <p
+            style={{
+              fontSize: "clamp(12px,0.95vw,15px)",
+              color: "rgba(26,18,8,0.58)",
+              lineHeight: 1.85,
+              maxWidth: 680,
+            }}
+          >
+            {OWNER.bio}
+          </p>
+
+          {/* Qualification Details Grid Container */}
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8"
+            style={{
+              maxWidth: 760,
+            }}
+          >
+            {[
+              { label: "Qualification", value: OWNER.qualification },
+              { label: "Batch", value: OWNER.batch },
+              { label: "Experience", value: OWNER.experience },
+              { label: "Contact", value: OWNER.phone },
+              { label: "Email", value: OWNER.email },
+            ].map(({ label, value }) => (
+              <div
+                key={label}
+                style={{
+                  background: "rgba(26,18,8,0.035)",
+                  border: "0.5px solid rgba(26,18,8,0.08)",
+                  borderRadius: 3,
+                  padding: "12px 14px",
+                }}
+              >
+                <span
+                  className="font-mono uppercase tracking-[0.28em]"
+                  style={{
+                    fontSize: "clamp(5px,0.5vw,7px)",
+                    color: "rgba(200,160,80,0.58)",
+                  }}
+                >
+                  {label}
+                </span>
+
+                <p
+                  style={{
+                    marginTop: 5,
+                    fontSize: "clamp(10px,0.85vw,13px)",
+                    color: "rgba(26,18,8,0.64)",
+                    lineHeight: 1.5,
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Strength parameter chips footer */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            {OWNER.strengths.map((item) => (
+              <span
+                key={item}
+                className="font-mono uppercase"
+                style={{
+                  fontSize: "clamp(6px,0.55vw,7px)",
+                  color: "rgba(26,18,8,0.42)",
+                  background: "rgba(200,160,80,0.08)",
+                  border: "0.5px solid rgba(200,160,80,0.18)",
+                  borderRadius: 2,
+                  padding: "4px 10px",
+                  letterSpacing: "0.18em",
+                }}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Member Card
+// ─────────────────────────────────────────────
+
+function MemberCard({
+  member,
+  index,
+  onClick,
+}: {
+  member: TeamMember;
+  index: number;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-6%" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.65,
+        delay: index * 0.08,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      // Disables hover state functions on mobile viewports
+      onHoverStart={() => window.innerWidth >= 640 && setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      onClick={onClick}
+      className="relative flex flex-col w-full sm:cursor-pointer"
+      style={{
+        background: "#f0ece0",
+        border: "0.5px solid rgba(26,18,8,0.1)",
+        borderRadius: 4,
+        overflow: "hidden",
+        boxShadow: hovered
+          ? "0 20px 52px rgba(26,18,8,0.12)"
+          : "0 4px 14px rgba(26,18,8,0.06)",
+        transition: "box-shadow 0.4s ease",
+      }}
+    >
+      {/* DESKTOP ONLY: Top accent border line drawing interaction */}
+      <motion.div
+        animate={{ scaleX: hovered ? 1 : 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="hidden sm:block"
+        style={{
+          transformOrigin: "left",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "1.5px",
+          background: "linear-gradient(90deg,#c8a052,#e8c070,transparent)",
+          zIndex: 10,
+        }}
+      />
+
+      {/* Card context workspace elements */}
+      <div
+        style={{
+          padding: "clamp(20px,3vh,32px) clamp(18px,2.5vw,28px)",
+        }}
+        className="flex flex-col gap-4 flex-1"
+      >
+        {/* Row block layout containing initials avatar block and id elements */}
+        <div className="flex items-start justify-between">
+          <motion.div
+            animate={{
+              background: hovered ? "rgba(200,160,80,0.12)" : "rgba(26,18,8,0.05)",
+              borderColor: hovered ? "rgba(200,160,80,0.4)" : "rgba(26,18,8,0.1)",
+              color: hovered ? "#c8a052" : "rgba(26,18,8,0.7)",
+            }}
+            transition={{ duration: 0.35 }}
+            className="flex items-center justify-center font-serif italic"
+            style={{
+              width: "clamp(46px,5.5vw,62px)",
+              height: "clamp(46px,5.5vw,62px)",
+              border: "0.5px solid rgba(26,18,8,0.15)",
+              borderRadius: 2,
+              fontSize: "clamp(15px,1.5vw,19px)",
+              flexShrink: 0,
+            }}
+          >
+            {member.initials}
+          </motion.div>
+
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "clamp(8px,0.6vw,9px)",
+              color: "rgba(200,160,80,0.5)",
+              letterSpacing: "0.3em",
+            }}
+          >
+            0{member.id}
+          </span>
+        </div>
+
+        {/* Identity label header sets */}
+        <div className="flex flex-col gap-1">
+          <motion.h3
+            animate={{ color: hovered ? "#1a1208" : "rgba(26,18,8,0.85)" }}
+            transition={{ duration: 0.3 }}
+            className="font-serif leading-tight text-lg sm:text-base md:text-lg"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            {member.name}
+          </motion.h3>
+          <span
+            className="font-mono uppercase tracking-[0.26em]"
+            style={{
+              fontSize: "clamp(6px,0.55vw,7px)",
+              color: "rgba(200,160,80,0.65)",
+            }}
+          >
+            {member.role}
+          </span>
+        </div>
+
+        {/* Specialisation body text snippet properties */}
+        <p
+          className="text-xs sm:text-[10px] md:text-xs"
+          style={{
+            color: "rgba(26,18,8,0.5)",
+            lineHeight: 1.65,
+          }}
+        >
+          {member.specialisation}
+        </p>
+
+        {/* Skills parameter tag elements wrap block layout */}
+        <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
+          {member.skills.map((skill) => (
+            <span
+              key={skill}
+              className="font-mono uppercase text-[8px] sm:text-[6px]"
+              style={{
+                color: "rgba(26,18,8,0.45)",
+                background: "rgba(26,18,8,0.04)",
+                border: "0.5px solid rgba(26,18,8,0.1)",
+                borderRadius: 2,
+                padding: "3px 8px",
+                letterSpacing: "0.18em",
+              }}
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Card information row layout block footer */}
+      <div
+        className="flex items-center justify-between"
+        style={{
+          padding: "clamp(12px,1.6vh,16px) clamp(18px,2.5vw,28px)",
+          borderTop: "0.5px solid rgba(26,18,8,0.07)",
+          background: "rgba(26,18,8,0.02)",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            className="font-serif"
+            style={{
+              fontSize: "clamp(14px,1.6vw,20px)",
+              color: "#1a1208",
+            }}
+          >
+            {member.projects}
+          </span>
+          <span
+            className="font-mono uppercase tracking-[0.22em]"
+            style={{
+              fontSize: "clamp(5px,0.48vw,7px)",
+              color: "rgba(26,18,8,0.3)",
+            }}
+          >
+            Projects
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span
+            className="font-mono uppercase tracking-[0.22em]"
+            style={{
+              fontSize: "clamp(5px,0.48vw,7px)",
+              color: "rgba(200,160,80,0.55)",
+            }}
+          >
+            {member.experience}
+          </span>
+          {/* DESKTOP ONLY: Side interactive arrow movements */}
+          <motion.div
+            className="hidden sm:block"
+            animate={{ x: hovered ? 3 : 0, opacity: hovered ? 0.7 : 0.3 }}
+            transition={{ duration: 0.3 }}
+          >
+            <svg viewBox="0 0 14 10" fill="none" style={{ width: 11 }}>
+              <line x1="0" y1="5" x2="11" y2="5" stroke="rgba(200,160,80,0.8)" strokeWidth="1" />
+              <polyline points="7,1 12,5 7,9" stroke="rgba(200,160,80,0.8)" strokeWidth="1" fill="none" strokeLinecap="round" />
+            </svg>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* DESKTOP ONLY: Conditional overlay read hints */}
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="hidden sm:block absolute bottom-14 right-4 font-mono uppercase pointer-events-none"
+            style={{
+              fontSize: "clamp(5px,0.48vw,6px)",
+              color: "rgba(200,160,80,0.5)",
+              letterSpacing: "0.25em",
+            }}
+          >
+            Click to read more
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Member Modal
+// ─────────────────────────────────────────────
+
+function MemberModal({
+  member,
+  onClose,
+}: {
+  member: TeamMember;
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[500] flex items-center justify-center"
+      style={{
+        background: "rgba(10,7,3,0.55)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        padding: "clamp(16px,4vw,48px)",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      {/* Esc hint */}
+      <motion.p
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="absolute top-5 left-1/2 -translate-x-1/2 font-mono uppercase pointer-events-none"
+        style={{
+          fontSize: "clamp(6px,0.55vw,7px)",
+          color: "rgba(245,242,235,0.3)",
+          letterSpacing: "0.3em",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Click outside or press Esc to close
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 20 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="relative flex flex-col md:flex-row overflow-hidden"
+        style={{
+          width: "min(90vw, 780px)",
+          maxHeight: "82vh",
+          background: "#f5f2eb",
+          borderRadius: 4,
+          border: "0.5px solid rgba(26,18,8,0.12)",
+          boxShadow: "0 40px 100px rgba(10,7,3,0.4)",
+        }}
+      >
+        {/* Left panel — avatar + stats */}
+        <div
+          className="flex flex-col items-center justify-center gap-5 shrink-0"
+          style={{
+            width: "clamp(140px,28%,220px)",
+            background: "#ede9dc",
+            padding: "clamp(24px,4vh,40px) clamp(16px,2.5vw,28px)",
+            borderRight: "0.5px solid rgba(26,18,8,0.08)",
+          }}
+        >
+          {/* Large initials */}
+          <div
+            className="flex items-center justify-center font-serif italic"
+            style={{
+              width: "clamp(64px,8vw,96px)",
+              height: "clamp(64px,8vw,96px)",
+              background: "rgba(200,160,80,0.1)",
+              border: "0.5px solid rgba(200,160,80,0.35)",
+              borderRadius: 2,
+              fontSize: "clamp(20px,2.8vw,36px)",
+              color: "#c8a052",
+            }}
+          >
+            {member.initials}
+          </div>
+
+          {/* Stats */}
+          {[
+            { value: member.projects.toString(), label: "Projects" },
+            { value: member.experience,          label: "Experience" },
+          ].map(({ value, label }) => (
+            <div key={label} className="flex flex-col items-center gap-0.5">
+              <span
+                className="font-serif"
+                style={{
+                  fontSize: "clamp(18px,2.4vw,30px)",
+                  color: "#1a1208",
+                  lineHeight: 1,
+                }}
+              >
+                {value}
+              </span>
+              <span
+                className="font-mono uppercase tracking-[0.28em]"
+                style={{
+                  fontSize: "clamp(5px,0.5vw,7px)",
+                  color: "rgba(200,160,80,0.55)",
+                }}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Right panel — details */}
+        <div
+          className="flex flex-col gap-5 overflow-y-auto flex-1"
+          style={{
+            padding: "clamp(24px,4vh,40px) clamp(20px,3vw,36px)",
+          }}
+        >
+          {/* Role tag */}
+          <span
+            className="font-mono uppercase tracking-[0.3em]"
+            style={{
+              fontSize: "clamp(6px,0.58vw,8px)",
+              color: "rgba(200,160,80,0.65)",
+            }}
+          >
+            {member.role}
+          </span>
+
+          {/* Name */}
+          <h2
+            className="font-serif leading-tight"
+            style={{
+              fontSize: "clamp(22px,3.2vw,42px)",
+              color: "#1a1208",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            {member.name}
+          </h2>
+
+          {/* Brass rule */}
+          <div
+            style={{
+              height: "0.5px",
+              width: "clamp(32px,5vw,60px)",
+              background: "linear-gradient(90deg,#c8a052,#e8c070,transparent)",
+            }}
+          />
+
+          {/* Specialisation */}
+          <p
+            className="font-mono uppercase tracking-[0.22em]"
+            style={{
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(26,18,8,0.38)",
+            }}
+          >
+            {member.specialisation}
+          </p>
+
+          {/* Bio */}
+          <p
+            style={{
+              fontSize: "clamp(10px,0.88vw,13px)",
+              color: "rgba(26,18,8,0.58)",
+              lineHeight: 1.82,
+            }}
+          >
+            {member.bio}
+          </p>
+
+          {/* Skills */}
+          <div className="flex flex-wrap gap-2 mt-1">
+            {member.skills.map((skill) => (
+              <span
+                key={skill}
+                className="font-mono uppercase"
+                style={{
+                  fontSize: "clamp(6px,0.55vw,7px)",
+                  color: "rgba(26,18,8,0.42)",
+                  background: "rgba(26,18,8,0.04)",
+                  border: "0.5px solid rgba(26,18,8,0.1)",
+                  borderRadius: 2,
+                  padding: "3px 9px",
+                  letterSpacing: "0.18em",
+                }}
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+
+          {/* Close button */}
+          <div
+            className="mt-auto pt-5"
+            style={{ borderTop: "0.5px solid rgba(26,18,8,0.08)" }}
+          >
+            <motion.button
+              onClick={onClose}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full font-mono uppercase tracking-[0.3em]"
+              style={{
+                background: "transparent",
+                border: "0.5px solid rgba(26,18,8,0.18)",
+                borderRadius: 2,
+                padding: "10px 20px",
+                fontSize: "clamp(7px,0.62vw,9px)",
+                color: "rgba(26,18,8,0.42)",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Close
+            </motion.button>
+          </div>
+        </div>
+
+        {/* X button */}
+        <motion.button
+          onClick={onClose}
+          whileHover={{ scale: 1.15, rotate: 90 }}
+          transition={{ duration: 0.2 }}
+          className="absolute top-3 right-3 z-10 flex items-center justify-center"
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: "50%",
+            background: "rgba(26,18,8,0.06)",
+            border: "0.5px solid rgba(26,18,8,0.1)",
+            cursor: "pointer",
+          }}
+          aria-label="Close"
+        >
+          <svg viewBox="0 0 12 12" fill="none" style={{ width: 10 }}>
+            <line x1="2" y1="2" x2="10" y2="10"
+              stroke="rgba(26,18,8,0.5)" strokeWidth="1.2"
+              strokeLinecap="round" />
+            <line x1="10" y1="2" x2="2" y2="10"
+              stroke="rgba(26,18,8,0.5)" strokeWidth="1.2"
+              strokeLinecap="round" />
+          </svg>
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Page
+// ─────────────────────────────────────────────
+
+export default function TeamPage() {
+  const router = useRouter();
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const headingInView = useInView(headingRef, { once: true });
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Monitor layout sizes programmatically to toggle interactive components safely
+  useEffect(() => {
+    const handleViewportMatch = () => {
+      // Disables modal popups on mobile breakpoints (below 640px)
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleViewportMatch();
+    window.addEventListener("resize", handleViewportMatch);
+    return () => window.removeEventListener("resize", handleViewportMatch);
+  }, []);
+
+  return (
+    <>
+      <main style={{ background: "#f5f2eb", minHeight: "100vh" }}>
+
+        {/* ── Sticky Navigation Header ── */}
+        <motion.header
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="sticky top-0 z-50 flex items-center justify-between"
+          style={{
+            padding: "clamp(14px,2.2vh,22px) clamp(24px,5vw,72px)",
+            borderBottom: "0.5px solid rgba(26,18,8,0.1)",
+            background: "rgba(245,242,235,0.92)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+          }}
+        >
+          <motion.button
+            onClick={() => router.back()}
+            whileHover={{ x: -3 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2 font-mono uppercase"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(26,18,8,0.42)",
+              letterSpacing: "0.32em",
+              fontFamily: "inherit",
+              padding: 0,
+            }}
+          >
+            <svg viewBox="0 0 14 10" fill="none" style={{ width: 12 }}>
+              <line x1="14" y1="5" x2="1" y2="5" stroke="currentColor" strokeWidth="1" />
+              <polyline points="5,1 0,5 5,9" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+            </svg>
+            Back
+          </motion.button>
+
+          <span
+            className="font-serif italic text-center px-4 truncate max-w-[40vw] sm:max-w-none"
+            style={{
+              fontSize: "clamp(11px,1.1vw,17px)",
+              color: "rgba(26,18,8,0.5)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            DK Construction & Consultancy
+          </span>
+
+          <span
+            className="font-mono uppercase"
+            style={{
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(200,160,80,0.55)",
+              letterSpacing: "0.38em",
+            }}
+          >
+            Team
+          </span>
+        </motion.header>
+
+        {/* ── Hero Presentation Section ── */}
+        <section
+          ref={headingRef}
+          style={{
+            padding: "clamp(48px,9vh,96px) clamp(24px,5vw,72px) clamp(32px,5vh,56px)",
+            borderBottom: "0.5px solid rgba(26,18,8,0.08)",
+          }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div className="flex flex-col gap-3">
+              <motion.div
+                initial={{ opacity: 0, x: -14 }}
+                animate={headingInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.55 }}
+                className="flex items-center gap-3"
+              >
+                <span
+                  className="font-mono uppercase tracking-[0.42em]"
+                  style={{
+                    fontSize: "clamp(7px,0.62vw,9px)",
+                    color: "rgba(200,160,80,0.55)",
+                  }}
+                >
+                  Leadership & People
+                </span>
+                <div
+                  style={{
+                    width: "clamp(20px,2.5vw,36px)",
+                    height: "0.5px",
+                    background: "rgba(200,160,80,0.25)",
+                  }}
+                />
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 22 }}
+                animate={headingInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="font-serif leading-none tracking-tight"
+                style={{
+                  fontSize: "clamp(36px,7vw,96px)",
+                  color: "#1a1208",
+                }}
+              >
+                Our Leadership & Team
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={headingInView ? { opacity: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                style={{
+                  fontSize: "clamp(11px,0.88vw,13px)",
+                  color: "rgba(26,18,8,0.42)",
+                  lineHeight: 1.78,
+                  maxWidth: "clamp(280px,42vw,560px)",
+                }}
+              >
+                A multidisciplinary construction and design team bringing together civil engineering, architecture, planning, site execution, and structural expertise.
+              </motion.p>
+            </div>
+
+            {/* Total active professional counter */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={headingInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.55, delay: 0.3 }}
+              className="flex flex-col gap-1 shrink-0"
+            >
+              <span
+                className="font-serif"
+                style={{
+                  fontSize: "clamp(36px,5vw,64px)",
+                  color: "#1a1208",
+                  lineHeight: 1,
+                }}
+              >
+                {TEAM.length + 1}
+              </span>
+              <span
+                className="font-mono uppercase tracking-[0.32em]"
+                style={{
+                  fontSize: "clamp(6px,0.55vw,8px)",
+                  color: "rgba(200,160,80,0.5)",
+                }}
+              >
+                Professionals
+              </span>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── Premium Founder Structural Section ── */}
+        <OwnerSection />
+
+        {/* ── Sub-Team Header Block ── */}
+        <section
+          style={{
+            padding: "clamp(42px,7vh,80px) clamp(24px,5vw,72px) clamp(18px,3vh,32px)",
+            textAlign: "center",
+          }}
+        >
+          <span
+            className="font-mono uppercase tracking-[0.42em]"
+            style={{
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(200,160,80,0.6)",
+            }}
+          >
+            Our Core Team
+          </span>
+
+          <h2
+            className="font-serif leading-none tracking-tight mt-4"
+            style={{
+              fontSize: "clamp(32px,5vw,72px)",
+              color: "#1a1208",
+              letterSpacing: "-0.04em",
+            }}
+          >
+            People Behind the Work
+          </h2>
+
+          <p
+            style={{
+              fontSize: "clamp(11px,0.88vw,13px)",
+              color: "rgba(26,18,8,0.42)",
+              lineHeight: 1.78,
+              maxWidth: 560,
+              margin: "18px auto 0",
+            }}
+          >
+            Each member brings a focused responsibility — from planning and design to structure, site coordination, and final execution.
+          </p>
+
+          {/* Micro-interaction instruction guideline text: Hidden completely on Mobile profiles */}
+          <p
+            className="hidden sm:block font-mono uppercase mt-6"
+            style={{
+              fontSize: "clamp(6px,0.55vw,7px)",
+              color: "rgba(26,18,8,0.26)",
+              letterSpacing: "0.35em",
+            }}
+          >
+            Hover to preview · Click to read full profile
+          </p>
+        </section>
+
+        {/* ── Core Team Profiles Grid Section ── */}
+        <section
+          style={{
+            padding: "clamp(24px,4vh,42px) clamp(24px,5vw,72px) clamp(64px,12vh,120px)",
+          }}
+        >
+          {/* 
+            Responsive layout specifications:
+            - grid-cols-1: Single stack full-width block configuration tailored for mobile devices
+            - sm:grid-cols-2: 2-Column layout structure configured for intermediate small screens/tablets
+            - lg:grid-cols-3: 3-Column horizontal architecture standard for vast screen configurations
+          */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(16px,1.6vw,20px)]">
+            {TEAM.map((member, i) => (
+              <MemberCard
+                key={member.id}
+                member={member}
+                index={i}
+                onClick={() => !isMobile && setSelectedMember(member)}
+              />
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      {/* ── Conditional Full-screen Member Sheet Modal ── */}
+      <AnimatePresence>
+        {!isMobile && selectedMember && (
+          <MemberModal
+            member={selectedMember}
+            onClose={() => setSelectedMember(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

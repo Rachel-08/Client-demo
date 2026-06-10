@@ -1,0 +1,785 @@
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
+
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
+
+type Project = {
+  id: number;
+  title: string;
+  year: string;
+  location: string;
+  area: string;
+  tags: string[];
+  image: string;
+  description: string;
+};
+
+type CategoryMeta = {
+  label: string;
+  description: string;
+  tagline: string;
+  stat: string;
+  statLabel: string;
+};
+
+// ─────────────────────────────────────────────
+// Data
+// ─────────────────────────────────────────────
+
+const CATEGORY_META: Record<string, CategoryMeta> = {
+  residential: {
+    label: "Residential",
+    description:
+      "Private homes and living environments designed around the people who inhabit them. Each project begins with listening and ends with spaces that hold meaning.",
+    tagline: "Homes that hold meaning",
+    stat: "12",
+    statLabel: "Projects",
+  },
+  commercial: {
+    label: "Commercial",
+    description:
+      "Office, retail, and public spaces that balance brand identity with human experience. Every square foot justified, every decision deliberate.",
+    tagline: "Spaces that perform",
+    stat: "8",
+    statLabel: "Projects",
+  },
+  "3d-design": {
+    label: "3D Design",
+    description:
+      "Photorealistic visualisations, walkthroughs, and material studies that bring unbuilt architecture to life before a single brick is laid.",
+    tagline: "Vision before construction",
+    stat: "16",
+    statLabel: "Renders",
+  },
+};
+
+const PROJECTS: Record<string, Project[]> = {
+  residential: [
+    {
+      id: 1,
+      title: "The Lattice House",
+      year: "2024",
+      location: "Ahmedabad, GJ",
+      area: "3,400 sq ft",
+      tags: ["Villa", "Contemporary"],
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=900&auto=format&fit=crop",
+      description: "A contemporary villa defined by its intricate lattice facade, which filters natural light into living spaces throughout the day. The home is organized around a central courtyard that draws in ventilation and greenery.",
+    },
+    {
+      id: 2,
+      title: "Courtyard Residence",
+      year: "2023",
+      location: "Surat, GJ",
+      area: "2,800 sq ft",
+      tags: ["Bungalow", "Traditional"],
+      image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=900&auto=format&fit=crop",
+      description: "A family bungalow that reinterprets the traditional courtyard typology for a contemporary lifestyle. Warm materials, deep overhangs, and layered thresholds create a home that breathes with the seasons.",
+    },
+    {
+      id: 3,
+      title: "Skyline Penthouse",
+      year: "2023",
+      location: "Mumbai, MH",
+      area: "4,200 sq ft",
+      tags: ["Penthouse", "Luxury"],
+      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=900&auto=format&fit=crop",
+      description: "A luxury penthouse occupying the top two floors of a high-rise tower, with panoramic views across the city skyline. Interiors balance restraint with precision — every material selected for longevity and tactile quality.",
+    },
+    {
+      id: 4,
+      title: "Garden Pavilion",
+      year: "2022",
+      location: "Vadodara, GJ",
+      area: "1,900 sq ft",
+      tags: ["Compact", "Landscape"],
+      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=900&auto=format&fit=crop",
+      description: "A compact home that dissolves the boundary between interior and garden. Sliding screens, planted terraces, and a continuous ground plane create a dwelling that feels larger than its footprint.",
+    },
+    {
+      id: 5,
+      title: "The Stone Farmhouse",
+      year: "2022",
+      location: "Rajkot, GJ",
+      area: "5,100 sq ft",
+      tags: ["Farmhouse", "Heritage"],
+      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=900&auto=format&fit=crop",
+      description: "A farmhouse set on two acres of agricultural land, built predominantly from locally quarried stone. The project responds to its rural context while accommodating a contemporary family's requirements.",
+    },
+    {
+      id: 6,
+      title: "Minimal Row House",
+      year: "2021",
+      location: "Pune, MH",
+      area: "1,600 sq ft",
+      tags: ["Row House", "Minimal"],
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=900&auto=format&fit=crop",
+      description: "A narrow-plot row house that maximises vertical space through a series of interconnected split levels. The restrained material palette — concrete, timber, and white plaster — keeps the focus on spatial quality.",
+    },
+  ],
+  commercial: [
+    {
+      id: 1,
+      title: "The Weave Office",
+      year: "2024",
+      location: "Ahmedabad, GJ",
+      area: "8,200 sq ft",
+      tags: ["Office", "Tech"],
+      image: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=900&auto=format&fit=crop",
+      description: "A technology company headquarters designed around collaborative work patterns. Flexible zones, acoustic zoning, and generous breakout spaces support both focused and social modes of working.",
+    },
+    {
+      id: 2,
+      title: "Rera Showroom",
+      year: "2023",
+      location: "Surat, GJ",
+      area: "3,400 sq ft",
+      tags: ["Retail", "Showroom"],
+      image: "https://images.unsplash.com/photo-1604328698692-f76ea9498e76?q=80&w=900&auto=format&fit=crop",
+      description: "A real estate showroom designed to communicate trust, scale, and aspiration. The space guides visitors through a curated sequence — arrival, discovery, and consultation — without feeling scripted.",
+    },
+    {
+      id: 3,
+      title: "Meridian Clinic",
+      year: "2023",
+      location: "Vadodara, GJ",
+      area: "2,100 sq ft",
+      tags: ["Healthcare", "Interior"],
+      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=900&auto=format&fit=crop",
+      description: "A specialist medical clinic where the design actively reduces patient anxiety. Soft lighting, natural materials, and clear wayfinding create an environment that feels considered rather than clinical.",
+    },
+    {
+      id: 4,
+      title: "Prism Restaurant",
+      year: "2022",
+      location: "Mumbai, MH",
+      area: "4,800 sq ft",
+      tags: ["F&B", "Hospitality"],
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=900&auto=format&fit=crop",
+      description: "A fine dining restaurant whose interior is structured around the geometry of light refraction. Faceted ceiling planes, brass fixtures, and deep banquettes create an atmosphere that shifts from day to evening.",
+    },
+  ],
+  "3d-design": [
+    {
+      id: 1,
+      title: "Villa Render Series",
+      year: "2024",
+      location: "Ahmedabad, GJ",
+      area: "Full Exterior + Interior",
+      tags: ["3D", "Exterior"],
+      image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=900&auto=format&fit=crop",
+      description: "A comprehensive render series covering all exterior elevations, approach views, and key interior spaces. Produced at print resolution for client presentation and planning submission.",
+    },
+    {
+      id: 2,
+      title: "Office Walkthrough",
+      year: "2024",
+      location: "Surat, GJ",
+      area: "Animation + Still",
+      tags: ["3D", "Animation"],
+      image: "https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=900&auto=format&fit=crop",
+      description: "A sixty-second animated walkthrough of a proposed office fitout, used to present the scheme to the client board. Produced with real-time rendering for rapid iteration during the design process.",
+    },
+    {
+      id: 3,
+      title: "Kitchen Material Study",
+      year: "2023",
+      location: "Remote",
+      area: "Material Visualisation",
+      tags: ["3D", "Interior"],
+      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=900&auto=format&fit=crop",
+      description: "A detailed material study visualisation for a custom kitchen design, produced to help the client make final decisions on stone, timber, and metal finishes before fabrication commenced.",
+    },
+    {
+      id: 4,
+      title: "Façade Concept",
+      year: "2023",
+      location: "Mumbai, MH",
+      area: "Concept + Render",
+      tags: ["3D", "Facade"],
+      image: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=900&auto=format&fit=crop",
+      description: "Concept visualisations exploring three alternative facade treatments for a mixed-use development. Rendered at dusk and midday to demonstrate the impact of different material choices across lighting conditions.",
+    },
+    {
+      id: 5,
+      title: "Landscape Visualisation",
+      year: "2022",
+      location: "Rajkot, GJ",
+      area: "Full Site Render",
+      tags: ["3D", "Landscape"],
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=900&auto=format&fit=crop",
+      description: "A full-site landscape visualisation produced for a residential development, showing planting at maturity, lighting strategy, and the relationship between built form and open space.",
+    },
+  ],
+};
+
+// ─────────────────────────────────────────────
+// Project Card
+// ─────────────────────────────────────────────
+
+function ProjectCard({
+  project,
+  index,
+  onClick,
+}: {
+  project: Project;
+  index: number;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.65,
+        delay: 0.2 + index * 0.07,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      // Disables mouse triggers completely on mobile sizes
+      onHoverStart={() => window.innerWidth >= 640 && setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      onClick={onClick}
+      className="relative overflow-hidden w-full flex flex-col sm:cursor-pointer"
+      style={{
+        borderRadius: 4,
+        border: "0.5px solid rgba(26,18,8,0.1)",
+        background: "#f0ece0",
+        boxShadow: hovered
+          ? "0 20px 56px rgba(26,18,8,0.14)"
+          : "0 4px 16px rgba(26,18,8,0.07)",
+        transition: "box-shadow 0.4s ease",
+      }}
+    >
+      {/* ── Image viewport block ── */}
+      <div className="relative overflow-hidden" style={{ height: "clamp(220px,32vh,320px)" }}>
+        <motion.img
+          src={project.image}
+          alt={project.title}
+          draggable={false}
+          animate={{ scale: hovered ? 1.06 : 1 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0 w-full h-full object-cover select-none"
+          style={{ transformOrigin: "center" }}
+        />
+
+        {/* MEDIUM / LARGE ONLY: Initial blur text card overlay */}
+        <motion.div
+          animate={{ opacity: hovered ? 0 : 1 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="hidden sm:flex absolute inset-0 flex-col items-center justify-center gap-2"
+          style={{
+            backdropFilter: "blur(10px) saturate(0.8)",
+            WebkitBackdropFilter: "blur(10px) saturate(0.8)",
+            background: "rgba(240,236,224,0.38)",
+          }}
+        >
+          <span className="font-mono uppercase tracking-[0.32em]" style={{ fontSize: "clamp(6px,0.58vw,8px)", color: "rgba(26,18,8,0.45)" }}>
+            {project.tags.join(" · ")}
+          </span>
+          <h3 className="font-serif text-center leading-tight px-4" style={{ fontSize: "clamp(16px,1.8vw,24px)", color: "#1a1208", letterSpacing: "-0.02em" }}>
+            {project.title}
+          </h3>
+          <motion.span animate={{ opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 2, repeat: Infinity }} className="font-mono uppercase tracking-[0.28em] mt-1" style={{ fontSize: "clamp(5px,0.5vw,7px)", color: "rgba(200,160,80,0.7)" }}>
+            Hover to reveal
+          </motion.span>
+        </motion.div>
+
+        {/* MEDIUM / LARGE ONLY: Interactive slide-up info sheet */}
+        <motion.div
+          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 10 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="hidden sm:block absolute bottom-0 left-0 right-0"
+          style={{
+            padding: "clamp(10px,1.8vh,18px) clamp(12px,1.6vw,20px)",
+            background: "linear-gradient(0deg,rgba(10,7,3,0.82) 0%,rgba(10,7,3,0.4) 70%,transparent 100%)",
+          }}
+        >
+          <div className="flex items-end justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <span className="font-mono uppercase tracking-[0.28em]" style={{ fontSize: "clamp(6px,0.55vw,7px)", color: "rgba(200,160,80,0.75)" }}>
+                {project.tags.join(" · ")}
+              </span>
+              <h3 className="font-serif leading-tight" style={{ fontSize: "clamp(14px,1.6vw,22px)", color: "#f0e8d4", letterSpacing: "-0.02em" }}>
+                {project.title}
+              </h3>
+            </div>
+            <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 1.6, repeat: Infinity }} className="flex flex-col items-center gap-1 shrink-0">
+              <div style={{ width: 28, height: 28, borderRadius: "50%", border: "0.5px solid rgba(200,160,80,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg viewBox="0 0 12 12" fill="none" style={{ width: 10 }}>
+                  <line x1="6" y1="2" x2="6" y2="10" stroke="rgba(200,160,80,0.8)" strokeWidth="1" />
+                  <line x1="2" y1="6" x2="10" y2="6" stroke="rgba(200,160,80,0.8)" strokeWidth="1" />
+                </svg>
+              </div>
+              <span className="font-mono uppercase" style={{ fontSize: 5, color: "rgba(200,160,80,0.55)", letterSpacing: "0.2em" }}>Open</span>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Index counter */}
+        <div className="absolute top-3 left-3 font-mono" style={{ fontSize: "clamp(7px,0.55vw,8px)", color: hovered ? "rgba(200,160,80,0.7)" : "rgba(26,18,8,0.35)", letterSpacing: "0.3em", transition: "color 0.3s" }}>
+          {String(project.id).padStart(2, "0")}
+        </div>
+
+        {/* Year stamp */}
+        <div className="absolute top-3 right-3 font-mono" style={{ fontSize: "clamp(7px,0.55vw,8px)", color: hovered ? "rgba(255,255,255,0.55)" : "rgba(26,18,8,0.35)", letterSpacing: "0.25em", transition: "color 0.3s" }}>
+          {project.year}
+        </div>
+      </div>
+
+      {/* ── Structural metadata details (Always shown below image) ── */}
+      <div className="flex flex-col gap-3 flex-1 justify-between" style={{ padding: "16px clamp(12px,1.6vw,20px)", borderTop: "0.5px solid rgba(26,18,8,0.08)" }}>
+        <div className="flex flex-col gap-1 min-w-0">
+          {/* Headline Title */}
+          <span className="font-serif block text-base sm:text-[13px] md:text-sm" style={{ color: "#1a1208", letterSpacing: "-0.01em" }}>
+            {project.title}
+          </span>
+          
+          {/* MOBILE ONLY: Inline tags list (since hover sheets are hidden) */}
+          <span className="font-mono block sm:hidden uppercase mt-1" style={{ fontSize: "9px", color: "rgba(200,160,80,0.85)", letterSpacing: "0.15em" }}>
+            Tags: {project.tags.join(" · ")}
+          </span>
+          
+          {/* Location & Dimension properties */}
+          <span className="font-mono block text-[10px] sm:text-[8px] mt-0.5" style={{ color: "rgba(26,18,8,0.5)", letterSpacing: "0.15em" }}>
+            {project.location} · {project.area}
+          </span>
+        </div>
+
+        {/* MEDIUM / LARGE ONLY: Micro-interactive alignment directional arrow */}
+        <motion.div
+          className="hidden sm:block self-end"
+          animate={{ x: hovered ? 3 : 0, opacity: hovered ? 0.8 : 0.35 }}
+          transition={{ duration: 0.3 }}
+          style={{ color: "rgba(200,160,80,0.7)", flexShrink: 0 }}
+        >
+          <svg viewBox="0 0 14 10" fill="none" style={{ width: 12 }}>
+            <line x1="0" y1="5" x2="11" y2="5" stroke="currentColor" strokeWidth="1" />
+            <polyline points="7,1 12,5 7,9" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+          </svg>
+        </motion.div>
+      </div>
+    </motion.article>
+  );
+}
+
+
+// ─────────────────────────────────────────────
+// Project Modal
+// ─────────────────────────────────────────────
+
+function ProjectModal({
+  project,
+  onClose,
+}: {
+  project: Project;
+  onClose: () => void;
+}) {
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[500] flex items-center justify-center"
+      style={{
+        background: "rgba(10,7,3,0.65)",
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
+        padding: "clamp(16px,4vw,48px)",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      {/* Hint — click outside */}
+      <motion.p
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="absolute top-5 left-1/2 -translate-x-1/2 font-mono uppercase pointer-events-none"
+        style={{
+          fontSize: "clamp(6px,0.55vw,7px)",
+          color: "rgba(240,232,212,0.35)",
+          letterSpacing: "0.3em",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Click outside or press Esc to close
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 24 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 24 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="relative flex overflow-hidden"
+        style={{
+          width: "min(88vw, 900px)",
+          maxHeight: "80vh",
+          background: "#f5f2eb",
+          borderRadius: 4,
+          border: "0.5px solid rgba(26,18,8,0.12)",
+          boxShadow: "0 40px 100px rgba(10,7,3,0.45)",
+        }}
+      >
+        {/* Left — image */}
+        <div
+          className="relative shrink-0 overflow-hidden"
+          style={{ width: "45%", minHeight: "clamp(260px,50vh,500px)" }}
+        >
+          <img
+            src={project.image}
+            alt={project.title}
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover select-none"
+          />
+          {/* Subtle gradient at right edge for blend */}
+          <div
+            className="absolute inset-y-0 right-0"
+            style={{
+              width: 48,
+              background:
+                "linear-gradient(90deg,transparent,rgba(245,242,235,0.18))",
+}}
+          />
+
+          {/* Project number */}
+          <div
+            className="absolute top-4 left-4 font-mono"
+            style={{
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(255,255,255,0.55)",
+              letterSpacing: "0.3em",
+            }}
+          >
+            {String(project.id).padStart(2, "0")}
+          </div>
+        </div>
+
+        {/* Right — details */}
+        <div
+          className="flex flex-col justify-between flex-1 overflow-y-auto"
+          style={{
+            padding: "clamp(24px,4vh,40px) clamp(20px,3vw,36px)",
+          }}
+        >
+          {/* Top content */}
+          <div className="flex flex-col gap-5">
+            {/* Tags */}
+<div className="flex flex-wrap gap-2">
+              {project.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="font-mono uppercase"
+                  style={{
+                    fontSize: "clamp(6px,0.55vw,7px)",
+                    color: "rgba(200,160,80,0.7)",
+                    background: "rgba(200,160,80,0.08)",
+                    border: "0.5px solid rgba(200,160,80,0.22)",
+                    borderRadius: 2,
+                    padding: "2px 8px",
+                    letterSpacing: "0.22em",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Title */}
+            <h2
+              className="font-serif leading-tight"
+              style={{
+                fontSize: "clamp(20px,2.8vw,38px)",
+                color: "#1a1208",
+letterSpacing: "-0.02em",
+              }}
+            >
+              {project.title}
+            </h2>
+
+            {/* Brass rule */}
+            <div
+              style={{
+                height: "0.5px",
+                width: "clamp(32px,5vw,64px)",
+                background:
+                  "linear-gradient(90deg,#c8a052,#e8c070,transparent)",
+              }}
+            />
+
+            {/* Description */}
+            <p
+              style={{
+                fontSize: "clamp(10px,0.9vw,13px)",
+                color: "rgba(26,18,8,0.62)",
+                lineHeight: 1.8,
+              }}
+            >
+              {project.description}
+            </p>
+{/* Meta grid */}
+            <div
+              className="grid grid-cols-2 gap-x-6 gap-y-4"
+              style={{ marginTop: 4 }}
+            >
+              {[
+                { label: "Year", value: project.year },
+                { label: "Location", value: project.location },
+                { label: "Area", value: project.area },
+                { label: "Type", value: project.tags[0] },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex flex-col gap-1">
+                  <span
+                    className="font-mono uppercase tracking-[0.3em]"
+                    style={{
+                      fontSize: "clamp(6px,0.52vw,7px)",
+                      color: "rgba(200,160,80,0.5)",
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    className="font-serif"
+                    style={{
+                      fontSize: "clamp(11px,1vw,14px)",
+                      color: "#1a1208",
+}}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom — close button */}
+          <div className="mt-8 pt-5"
+            style={{ borderTop: "0.5px solid rgba(26,18,8,0.08)" }}
+          >
+            <motion.button
+              onClick={onClose}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full font-mono uppercase tracking-[0.32em]"
+              style={{
+                background: "transparent",
+                border: "0.5px solid rgba(26,18,8,0.2)",
+                borderRadius: 2,
+                padding: "10px 20px",
+                fontSize: "clamp(7px,0.62vw,9px)",
+                color: "rgba(26,18,8,0.45)",
+                cursor: "pointer",
+fontFamily: "inherit",
+              }}
+            >
+              Close
+            </motion.button>
+          </div>
+        </div>
+
+        {/* Close — top right X */}
+        <motion.button
+          onClick={onClose}
+          whileHover={{ scale: 1.15, rotate: 90 }}
+          transition={{ duration: 0.2 }}
+          className="absolute top-4 right-4 z-10"
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: "50%",
+            background: "rgba(26,18,8,0.08)",
+            border: "0.5px solid rgba(26,18,8,0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            fontFamily: "inherit",
+}}
+          aria-label="Close"
+        >
+          <svg viewBox="0 0 12 12" fill="none" style={{ width: 10 }}>
+            <line x1="2" y1="2" x2="10" y2="10"
+              stroke="rgba(26,18,8,0.55)" strokeWidth="1.2"
+              strokeLinecap="round" />
+            <line x1="10" y1="2" x2="2" y2="10"
+              stroke="rgba(26,18,8,0.55)" strokeWidth="1.2"
+              strokeLinecap="round" />
+          </svg>
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Page
+// ─────────────────────────────────────────────
+
+export default function CategoryPage() {
+  const params = useParams();
+  const router = useRouter();
+  const category = (params?.category as string) ?? "";
+
+  const meta = CATEGORY_META[category];
+  const projects = PROJECTS[category] ?? [];
+
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [pageReady, setPageReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (!meta) {
+      router.replace("/");
+    } else {
+      const t = setTimeout(() => setPageReady(true), 60);
+      return () => clearTimeout(t);
+    }
+  }, [meta, router]);
+
+  // Handle responsive behavior programmatically for interactive elements
+  useEffect(() => {
+    const checkMobileView = () => {
+      // Mobile breakpoint targets screen widths below 640px (Tailwind sm)
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobileView();
+    window.addEventListener("resize", checkMobileView);
+    return () => window.removeEventListener("resize", checkMobileView);
+  }, []);
+
+  if (!meta || !pageReady) {
+    return <div style={{ background: "#f5f2eb", minHeight: "100vh" }} />;
+  }
+
+  return (
+    <>
+      <main style={{ background: "#f5f2eb", minHeight: "100vh" }}>
+        {/* ── Sticky Header ── */}
+        <motion.header
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="sticky top-0 z-50 flex items-center justify-between"
+          style={{
+            padding: "clamp(14px,2.2vh,22px) clamp(24px,5vw,72px)",
+            borderBottom: "0.5px solid rgba(26,18,8,0.1)",
+            background: "rgba(245,242,235,0.92)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+          }}
+        >
+          <motion.button
+            onClick={() => router.back()}
+            whileHover={{ x: -3 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2 font-mono uppercase"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "clamp(7px,0.62vw,9px)",
+              color: "rgba(26,18,8,0.42)",
+              letterSpacing: "0.32em",
+              fontFamily: "inherit",
+              padding: 0,
+            }}
+          >
+            <svg viewBox="0 0 14 10" fill="none" style={{ width: 12 }}>
+              <line x1="14" y1="5" x2="1" y2="5" stroke="currentColor" strokeWidth="1" />
+              <polyline points="5,1 0,5 5,9" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+            </svg>
+            Back
+          </motion.button>
+
+          <span className="font-serif" style={{ fontSize: "clamp(11px,1vw,15px)", color: "rgba(26,18,8,0.45)", letterSpacing: "0.08em" }}>
+            DK Construction & Consultancy
+          </span>
+
+          <span className="font-mono uppercase" style={{ fontSize: "clamp(7px,0.62vw,9px)", color: "rgba(200,160,80,0.6)", letterSpacing: "0.38em" }}>
+            {meta.label}
+          </span>
+        </motion.header>
+
+        {/* ── Hero ── */}
+        <section style={{ padding: "clamp(44px,8vh,88px) clamp(24px,5vw,72px) clamp(28px,5vh,56px)", borderBottom: "0.5px solid rgba(26,18,8,0.08)" }}>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div className="flex flex-col gap-3 max-w-2xl">
+              <motion.div initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55 }} className="flex items-center gap-3">
+                <span className="font-mono uppercase tracking-[0.4em]" style={{ fontSize: "clamp(7px,0.62vw,9px)", color: "rgba(200,160,80,0.6)" }}>Work</span>
+                <div style={{ width: "clamp(20px,2.5vw,36px)", height: "0.5px", background: "rgba(200,160,80,0.3)" }} />
+                <span className="font-mono uppercase tracking-[0.4em]" style={{ fontSize: "clamp(7px,0.62vw,9px)", color: "rgba(26,18,8,0.35)" }}>{meta.label}</span>
+              </motion.div>
+
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }} className="font-serif leading-none tracking-tight" style={{ fontSize: "clamp(36px,7vw,96px)", color: "#1a1208" }}>
+                {meta.label}
+              </motion.h1>
+
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.22 }} className="font-serif italic" style={{ fontSize: "clamp(13px,1.2vw,18px)", color: "rgba(26,18,8,0.42)", lineHeight: 1.55 }}>
+                {meta.tagline}
+              </motion.p>
+            </div>
+
+            {/* Stats */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.55, delay: 0.3 }} className="flex items-center gap-6 shrink-0">
+              <div className="flex flex-col gap-1">
+                <span className="font-serif" style={{ fontSize: "clamp(28px,4vw,52px)", color: "#1a1208", lineHeight: 1 }}>{meta.stat}</span>
+                <span className="font-mono uppercase tracking-[0.3em]" style={{ fontSize: "clamp(6px,0.55vw,8px)", color: "rgba(200,160,80,0.55)" }}>{meta.statLabel}</span>
+              </div>
+              <div style={{ width: "0.5px", height: 40, background: "rgba(26,18,8,0.1)" }} />
+              <div className="flex flex-col gap-1">
+                <span className="font-serif" style={{ fontSize: "clamp(28px,4vw,52px)", color: "#1a1208", lineHeight: 1 }}>{new Date().getFullYear() - 2018}+</span>
+                <span className="font-mono uppercase tracking-[0.3em]" style={{ fontSize: "clamp(6px,0.55vw,8px)", color: "rgba(200,160,80,0.55)" }}>Years</span>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Guide hint: hidden on mobile, matches tablet & desktop layouts */}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.45 }} className="hidden sm:block font-mono uppercase mt-6" style={{ fontSize: "clamp(6px,0.55vw,7px)", color: "rgba(26,18,8,0.28)", letterSpacing: "0.35em" }}>
+            Hover to reveal · Click to explore
+          </motion.p>
+        </section>
+
+        {/* ── Responsive Project Grid ── */}
+        <section style={{ padding: "clamp(32px,5vh,56px) clamp(24px,5vw,72px) clamp(64px,12vh,120px)" }}>
+          {/* 
+            Responsive columns definitions:
+            - grid-cols-1: Mobile Layout (Vertical stacked timeline layout)
+            - sm:grid-cols-2: Medium Screens Layout (Tablets / small notebooks)
+            - lg:grid-cols-3: Large Desktop Layout (Original premium 3-column block architecture)
+          */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(16px,1.6vw,22px)]">
+            {projects.map((project, i) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={i}
+                onClick={() => !isMobile && setSelectedProject(project)}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* ── Conditional Project Modal ── */}
+      <AnimatePresence>
+        {!isMobile && selectedProject && (
+          <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

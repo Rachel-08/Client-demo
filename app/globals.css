@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #37210796;
 }
 
 @theme inline {
@@ -10,6 +11,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+   --font-cursive: 'Dancing Script', cursive;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +25,52 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden; 
+  min-height: 100vh;
+  
+  /* Firefox: Thin layout, transparent track, cream thumb */
+  /* scrollbar-width: thin; 
+  scrollbar-color: #e7dcc2 transparent; */
+}
+
+/* 2. WebKit Dimensions (Chrome, Safari, newer Edge) */
+::-webkit-scrollbar {
+  width: 10px;    /* Vertical scrollbar thickness */
+  height: 10px;   /* Horizontal scrollbar thickness */
+}
+
+/* 3. Completely Transparent Track Layout */
+::-webkit-scrollbar-track {
+  /* display: none; */
+  /* background: rgba(72, 39, 22, 0.523); 
+  border-top-left-radius: 10%;
+  border-bottom-left-radius: 10%; Enforces clean inner round edges */
+}
+::-webkit-progress-bar{
+  background: rgba(72, 39, 22, 0.616); 
+  border-top-left-radius: 10%;
+  border-bottom-left-radius: 10%;
+}
+
+/* 4. Fully Rounded Pill-Shaped Thumb (Handle) */
+::-webkit-scrollbar-thumb {
+  background: #e7dcc2; 
+  border-radius: 9999px; /* Enforces perfect roundness ("iround") */
+  /* Creates padding inside the transparent track so it looks floating */
+  border: 2px solid transparent; 
+  background-clip: padding-box; 
+}
+
+/* 5. Thumb Interactive State */
+::-webkit-scrollbar-thumb:hover {
+  background: #fffef7;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 6. REMOVE TOP AND BOTTOM ARROWS (Scrollbar Buttons) */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
