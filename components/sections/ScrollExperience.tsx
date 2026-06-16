@@ -378,15 +378,15 @@ function getTimeline(mode: ViewportMode): Timeline {
     },
 
     landing: {
-      opacity: [0.14, 0.17, 0.21, 0.25],
+      opacity: [0.14, 0.17, 0.21, 0.23],
       y: [0.14, 0.17],
-      exitX: [0.21, 0.25],
+      exitX: [0.21, 0.23],
       target: 0.18,
     },
 
     services: {
-      opacity: [0.23, 0.25, 0.34, 0.38],
-      y: [0.23, 0.27],
+      opacity: [0.21, 0.23, 0.32, 0.36],
+      y: [0.21, 0.25],
       exitY: [0.34, 0.4],
       target: 0.29,
     },

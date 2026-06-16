@@ -88,23 +88,31 @@ export default function ContactSection({
         </div>
 
         {/* 
-          RIGHT COLUMN: INTERACTIVE GOOGLE MAP (PERFECT SQUARE)
-          - aspect-square forces the width and height to remain 1:1.
-          - max-w sets an upper boundary limit so it doesn't scale overly huge.
-        */}
-        <div className="w-full max-w-[100%] aspect-square mx-auto lg:ml-auto lg:mr-0 relative overflow-hidden rounded-2xl border border-neutral-800">
-          <iframe
-            title="DK Construction & Consultancy Location Map"
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            loading="lazy"
-            allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
-            src={exactMapSrc}
-            className="w-full h-full  opacity-80 contrast-125 select-none pointer-events-auto"
-          />
-        </div>
+  RIGHT COLUMN: INTERACTIVE GOOGLE MAP (PERFECT SQUARE) WITH CLICKABLE OVERLAY
+*/}
+<div className="w-full max-w-[100%] aspect-square mx-auto lg:ml-auto lg:mr-0 relative overflow-hidden rounded-2xl border border-neutral-800 group/map">
+  
+  {/* Transparent Link Overlay - Intercepts clicks and opens Google Maps */}
+  <a 
+    href="https://maps.app.goo.gl/N4bj2Vxq1Zs6SZBh9"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="absolute inset-0 z-20 block cursor-pointer"
+    aria-label="Open DK Construction & Consultancy in Google Maps"
+  />
+  
+  <iframe
+    title="DK Construction & Consultancy Location Map"
+    width="100%"
+    height="100%"
+    style={{ border: 0 }}
+    loading="lazy"
+    allowFullScreen
+    referrerPolicy="no-referrer-when-downgrade"
+    src={exactMapSrc}
+    className="w-full h-full opacity-80 contrast-125 select-none pointer-events-none transition duration-300 group-hover/map:opacity-100"
+  />
+</div>
 
       </div>
     </motion.section>
