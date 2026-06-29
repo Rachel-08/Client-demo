@@ -74,3 +74,12 @@ body {
   width: 0;
   height: 0;
 }
+
+.how-we-work-scroll::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.04);
+        }
+
+        .how-we-work-scroll::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.35);
+          border-radius: 999px;
+        }

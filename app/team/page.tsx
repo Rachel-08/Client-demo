@@ -120,8 +120,9 @@ function OwnerSection() {
   return (
     <section
       ref={ref}
+      className="px-4 sm:px-6"
       style={{
-        padding: "clamp(36px,7vh,80px) clamp(24px,5vw,72px) clamp(48px,8vh,90px)",
+        padding: "clamp(32px,7vh,72px) clamp(16px,4vw,48px) clamp(44px,8vh,84px)",
         borderBottom: "0.5px solid rgba(26,18,8,0.08)",
       }}
     >
@@ -179,7 +180,7 @@ function OwnerSection() {
         <div
           className="flex flex-col"
           style={{
-            padding: "clamp(24px,5vw,68px)",
+            padding: "clamp(20px,4vw,56px)",
           }}
         >
           <span
@@ -227,7 +228,7 @@ function OwnerSection() {
               fontSize: "clamp(12px,0.95vw,15px)",
               color: "rgba(26,18,8,0.58)",
               lineHeight: 1.85,
-              maxWidth: 680,
+              maxWidth: "min(100%,680px)",
             }}
           >
             {OWNER.bio}
@@ -237,7 +238,7 @@ function OwnerSection() {
           <div
             className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8"
             style={{
-              maxWidth: 760,
+              maxWidth: "min(100%,760px)",
             }}
           >
             {[
@@ -555,7 +556,7 @@ function MemberModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[500] flex items-center justify-center"
+      className="fixed inset-0 z-500 flex items-center justify-center"
       style={{
         background: "rgba(10,7,3,0.55)",
         backdropFilter: "blur(8px)",
@@ -819,7 +820,7 @@ export default function TeamPage() {
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="sticky top-0 z-50 flex items-center justify-between"
+          className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6"
           style={{
             padding: "clamp(14px,2.2vh,22px) clamp(24px,5vw,72px)",
             borderBottom: "0.5px solid rgba(26,18,8,0.1)",
@@ -972,7 +973,7 @@ export default function TeamPage() {
         {/* ── Sub-Team Header Block ── */}
         <section
           style={{
-            padding: "clamp(42px,7vh,80px) clamp(24px,5vw,72px) clamp(18px,3vh,32px)",
+            padding: "clamp(36px,6vh,72px) clamp(16px,4vw,48px) clamp(18px,3vh,32px)",
             textAlign: "center",
           }}
         >
@@ -1025,7 +1026,7 @@ export default function TeamPage() {
         {/* ── Core Team Profiles Grid Section ── */}
         <section
           style={{
-            padding: "clamp(24px,4vh,42px) clamp(24px,5vw,72px) clamp(64px,12vh,120px)",
+            padding: "clamp(24px,4vh,42px) clamp(16px,4vw,48px) clamp(64px,12vh,120px)",
           }}
         >
           {/* 

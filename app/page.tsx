@@ -1,4 +1,4 @@
-import ScrollExperience from "@/components/sections/ScrollExperience";
+import ScrollExperience from "@/components/desktop/DesktopScrollExperience";
 
 export default function Page() {
   return (

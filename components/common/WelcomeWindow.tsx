@@ -23,7 +23,7 @@ function Hinge({ top, side }: { top: string; side: "left" | "right" }) {
 
   return (
     <div
-      className="pointer-events-none absolute z-[50]"
+      className="pointer-events-none absolute z-50"
       style={{
         top,
         [isLeft ? "left" : "right"]: 0,
@@ -151,7 +151,7 @@ function Handle({ side }: { side: "left" | "right" }) {
 
   return (
     <div
-      className="pointer-events-none absolute top-1/2 z-[50] -translate-y-1/2"
+      className="pointer-events-none absolute top-1/2 z-50 -translate-y-1/2"
       style={{
         [isLeft ? "right" : "left"]: "clamp(4px, 0.9vw, 9px)",
         width: "clamp(6px, 0.9vw, 11px)",
@@ -218,7 +218,7 @@ function WindowPane({
         transformOrigin: isLeft ? "left center" : "right center",
         opacity,
       }}
-      className={`pointer-events-none absolute top-0 z-[30] h-full w-1/2 ${
+      className={`pointer-events-none absolute top-0 z-30 h-full w-1/2 ${
         isLeft ? "left-0" : "right-0"
       }`}
     >
@@ -305,7 +305,7 @@ function ScrollNudge({ visible }: { visible: boolean }) {
           exit={{ opacity: 0, y: 6 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="
-            pointer-events-none absolute left-1/2 z-[90]
+            pointer-events-none absolute left-1/2 z-90
             flex -translate-x-1/2 flex-col items-center gap-1.5
             bottom-[calc(1.4rem+env(safe-area-inset-bottom))]
             sm:bottom-8 sm:gap-2
@@ -323,7 +323,7 @@ function ScrollNudge({ visible }: { visible: boolean }) {
                 ease: "easeInOut",
               }}
             >
-              <svg viewBox="0 0 16 9" fill="none" className="h-[7px] w-3.5 sm:h-2">
+              <svg viewBox="0 0 16 9" fill="none" className="h-1.75 w-3.5 sm:h-2">
                 <polyline
                   points="1,1 8,8 15,1"
                   stroke="rgba(0,0,0,0.45)"
@@ -369,7 +369,7 @@ export default function WelcomeWindow({
   }, [loadingComplete, onEnterClick]);
 
   const resetIdleTimer = useCallback(() => {
-    setNudgeVisible(false);
+    window.setTimeout(() => setNudgeVisible(false), 0);
 
     if (idleTimer.current) clearTimeout(idleTimer.current);
 
@@ -380,9 +380,10 @@ export default function WelcomeWindow({
 
   useEffect(() => {
     if (!isActive) {
-      setNudgeVisible(false);
+      const hideHandle = window.setTimeout(() => setNudgeVisible(false), 0);
+
       if (idleTimer.current) clearTimeout(idleTimer.current);
-      return;
+      return () => clearTimeout(hideHandle);
     }
 
     resetIdleTimer();
@@ -402,40 +403,37 @@ export default function WelcomeWindow({
 
   return (
     <section
-      className={`absolute inset-0 z-[80] ${
+      style={{ zIndex: isActive ? 1 : 0, minHeight: "100svh" }}
+      className={`absolute inset-0 ${
         isActive ? "pointer-events-auto" : "pointer-events-none"
       }`}
     >
-      <motion.div
-        role="button"
-        tabIndex={isActive ? 0 : -1}
+      <motion.button
+        type="button"
+        disabled={!isActive}
         aria-label="Enter website"
         onClick={onEnterClick}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onEnterClick();
-          }
-        }}
         style={{
           scale: windowScale,
           opacity: windowOpacity,
           x: windowExitX,
+          touchAction: "manipulation",
+          userSelect: "none",
         }}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center outline-none"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
       >
         <div
           className="
             relative overflow-hidden bg-[#080503] shadow-[0_28px_90px_rgba(0,0,0,0.48)]
-            [perspective:1100px]
+            perspective-[1100px]
 
-            h-[58svh] w-[88vw] rounded-[12px]
+            h-[58svh] w-[88vw] rounded-xl
 
             min-[390px]:h-[60svh] min-[390px]:w-[86vw]
 
-            sm:h-[62svh] sm:w-[82vw] sm:rounded-[16px]
+            sm:h-[62svh] sm:w-[82vw] sm:rounded-2xl
             md:h-[65vh] md:w-[78vw] md:rounded-[18px]
-            lg:h-[66vh] lg:w-[74vw] lg:max-w-5xl lg:[perspective:1400px]
+            lg:h-[66vh] lg:w-[74vw] lg:max-w-5xl lg:perspective-[1400px]
             xl:h-[68vh] xl:w-[70vw]
             2xl:h-[70vh] 2xl:max-w-6xl
           "
@@ -452,32 +450,32 @@ export default function WelcomeWindow({
           <motion.div
             style={{ opacity: frameOpacity }}
             className="
-              pointer-events-none absolute inset-0 z-[20]
-              rounded-[12px] border-[7px] border-[#0d0805]
-              sm:rounded-[16px] sm:border-[10px]
-              md:rounded-[18px] md:border-[14px]
+              pointer-events-none absolute inset-0 z-20
+              rounded-xl border-[7px] border-[#0d0805]
+              sm:rounded-2xl sm:border-10
+              md:rounded-[18px] md:border-14
             "
           />
 
           <motion.div
             style={{ opacity: frameOpacity }}
             className="
-              pointer-events-none absolute left-1/2 top-0 z-[25] h-full
-              w-[6px] -translate-x-1/2 bg-[#0d0805]
-              sm:w-[8px]
-              md:w-[12px]
+              pointer-events-none absolute left-1/2 top-0 z-25 h-full
+              w-1.5 -translate-x-1/2 bg-[#0d0805]
+              sm:w-2
+              md:w-3
             "
           />
 
           <WindowPane side="left" rotateY={leftRotate} opacity={frameOpacity} />
           <WindowPane side="right" rotateY={rightRotate} opacity={frameOpacity} />
         </div>
-      </motion.div>
+      </motion.button>
 
       <motion.p
         style={{ opacity: scrollTextOpacity, x: windowExitX }}
         className="
-          pointer-events-none absolute left-1/2 z-[90] -translate-x-1/2
+          pointer-events-none absolute left-1/2 z-90 -translate-x-1/2
           whitespace-nowrap text-center font-medium uppercase text-black/60
 
           bottom-[calc(1.6rem+env(safe-area-inset-bottom))]

@@ -45,8 +45,13 @@ export default function LoadingScreen({
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[999] flex flex-col items-center justify-center"
-          style={{ background: "#060402" }}
+          className="fixed inset-0 z-[999] flex flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-8"
+          style={{
+            minHeight: "100svh",
+            paddingTop: "max(env(safe-area-inset-top), 24px)",
+            paddingBottom: "max(env(safe-area-inset-bottom), 24px)",
+            background: "#060402",
+          }}
         >
           {/* Top + bottom thin brass rules that draw in */}
           <motion.div
